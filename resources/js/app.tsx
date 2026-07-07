@@ -12,14 +12,18 @@ createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
     layout: (name) => {
         switch (true) {
-            case name === 'welcome':
-                return null;
             case name.startsWith('auth/'):
                 return AuthLayout;
             case name.startsWith('settings/'):
                 return [AppLayout, SettingsLayout];
-            default:
+            case name === 'dashboard':
+            case name.startsWith('cabinet/'):
+            case name.startsWith('admin/'):
                 return AppLayout;
+            // Публичные и самостоятельные страницы (welcome, catalog, services/*,
+            // applications/*) задают собственный layout — сайдбар им не нужен.
+            default:
+                return null;
         }
     },
     strictMode: true,
