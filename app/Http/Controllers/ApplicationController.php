@@ -158,6 +158,87 @@ class ApplicationController extends Controller
     }
 
     /**
+     * Форма II этапа: предоставление расширенных данных и документов после
+     * предварительного рассмотрения (контрольный кейс «Вагоны в лизинг»).
+     */
+    public function stage2(Request $request, Application $application): Response
+    {
+        $this->authorizeOwner($request, $application);
+        abort_if($application->status === 'draft', 404);
+
+        $service = $application->service()->firstOrFail();
+        $stage2 = $service->meta['stage2'] ?? null;
+        abort_unless($stage2, 404);
+
+        $schema = $this->stage2Schema($stage2);
+
+        return Inertia::render('applications/stage2', [
+            'application' => [
+                'id' => $application->id,
+                'number' => $application->number,
+                'submitted' => isset($application->meta['stage2_data']),
+                'data' => $application->meta['stage2_data'] ?? [],
+            ],
+            'service' => ['slug' => $service->slug, 'title' => $service->title],
+            'schema' => $schema,
+            'references' => ServicePresenter::references($schema),
+        ]);
+    }
+
+    public function submitStage2(Request $request, Application $application): RedirectResponse
+    {
+        $this->authorizeOwner($request, $application);
+        abort_if($application->status === 'draft', 404);
+
+        $service = $application->service;
+        $stage2 = $service->meta['stage2'] ?? null;
+        abort_unless($stage2, 404);
+
+        $validated = $request->validate(['data' => ['required', 'array']]);
+        $schema = ServiceSchema::make($this->stage2Schema($stage2));
+        $data = $schema->withComputed($validated['data']);
+
+        $errors = $schema->validate($data);
+        if (! empty($errors)) {
+            throw ValidationException::withMessages(
+                collect($errors)->mapWithKeys(fn ($msg, $field) => ["data.{$field}" => $msg])->all(),
+            );
+        }
+
+        $meta = $application->meta ?? [];
+        $meta['stage2_data'] = $data;
+        $application->update(['meta' => $meta, 'status' => 'in_review']);
+
+        $application->events()->create([
+            'type' => 'status_changed',
+            'title' => 'II этап: расширенные данные предоставлены',
+            'body' => 'Направлен расширенный пакет документов для окончательного решения.',
+            'status' => 'in_review',
+        ]);
+
+        return redirect()->route('cabinet.show', $application)->with('success', 'Документы II этапа отправлены.');
+    }
+
+    /**
+     * Оборачивает поля II этапа в одношаговую схему для рендера и валидации.
+     *
+     * @param  array<string, mixed>  $stage2
+     * @return array<string, mixed>
+     */
+    private function stage2Schema(array $stage2): array
+    {
+        return [
+            'steps' => [[
+                'id' => 'stage2',
+                'title' => $stage2['title'] ?? 'II этап',
+                'description' => $stage2['description'] ?? null,
+                'fields' => $stage2['fields'] ?? [],
+            ]],
+            'settings' => ['submitLabel' => 'Отправить документы II этапа'],
+        ];
+    }
+
+    /**
      * Имитация интеграционного обмена при отправке заявки (п. 6.12):
      * подписание ЭЦП, передача во внешнюю BPM-систему дочерней организации,
      * присвоение статуса и уведомление. Отражается в таймлайне личного кабинета.

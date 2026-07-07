@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import PublicLayout from '@/layouts/public-layout';
 import { Head } from '@inertiajs/react';
-import { BarChart3, CalendarClock, ExternalLink } from 'lucide-react';
+import { BarChart3, CalendarClock, ExternalLink, LayoutDashboard, X } from 'lucide-react';
 import { useState } from 'react';
 
 type AnalyticsItem = {
@@ -23,6 +23,7 @@ type AnalyticsProps = {
 
 export default function Analytics({ items, types }: AnalyticsProps) {
     const [type, setType] = useState<string | null>(null);
+    const [embed, setEmbed] = useState<AnalyticsItem | null>(null);
     const filtered = type ? items.filter((i) => i.type === type) : items;
 
     return (
@@ -54,49 +55,91 @@ export default function Analytics({ items, types }: AnalyticsProps) {
             </div>
 
             <div className="mx-auto grid w-full max-w-7xl gap-4 px-4 py-8 sm:grid-cols-2 sm:px-6 lg:grid-cols-3 lg:px-8">
-                {filtered.map((item) => (
-                    <a
-                        key={item.id}
-                        href={item.link_url ?? '#'}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="group flex flex-col rounded-2xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
-                    >
-                        <div className="flex items-center justify-between gap-2">
-                            {item.type && <Badge variant="secondary">{item.type}</Badge>}
-                            {item.organization?.short_name && (
-                                <span
-                                    className="rounded-md px-2 py-0.5 text-xs font-medium"
-                                    style={{
-                                        backgroundColor: `${item.organization.color ?? '#0d9488'}1a`,
-                                        color: item.organization.color ?? '#0d9488',
-                                    }}
-                                >
-                                    {item.organization.short_name}
-                                </span>
+                {filtered.map((item) => {
+                    const inner = (
+                        <>
+                            <div className="flex items-center justify-between gap-2">
+                                {item.type && <Badge variant="secondary">{item.type}</Badge>}
+                                {item.organization?.short_name && (
+                                    <span
+                                        className="rounded-md px-2 py-0.5 text-xs font-medium"
+                                        style={{
+                                            backgroundColor: `${item.organization.color ?? '#0d9488'}1a`,
+                                            color: item.organization.color ?? '#0d9488',
+                                        }}
+                                    >
+                                        {item.organization.short_name}
+                                    </span>
+                                )}
+                            </div>
+                            <h3 className="mt-3 font-semibold text-foreground">{item.title}</h3>
+                            <p className="mt-1.5 flex-1 text-sm text-muted-foreground">{item.description}</p>
+                            {item.source && (
+                                <p className="mt-3 text-xs text-muted-foreground">
+                                    Источник: <span className="text-foreground">{item.source}</span>
+                                </p>
                             )}
-                        </div>
-                        <h3 className="mt-3 font-semibold text-foreground">{item.title}</h3>
-                        <p className="mt-1.5 flex-1 text-sm text-muted-foreground">{item.description}</p>
-                        {item.source && (
-                            <p className="mt-3 text-xs text-muted-foreground">
-                                Источник: <span className="text-foreground">{item.source}</span>
-                            </p>
-                        )}
-                        <div className="mt-2 flex items-center justify-between border-t border-border/70 pt-3 text-xs text-muted-foreground">
-                            {item.period && (
-                                <span className="inline-flex items-center gap-1">
-                                    <CalendarClock className="size-3.5" />
-                                    {item.period}
+                            <div className="mt-2 flex items-center justify-between border-t border-border/70 pt-3 text-xs text-muted-foreground">
+                                {item.period && (
+                                    <span className="inline-flex items-center gap-1">
+                                        <CalendarClock className="size-3.5" />
+                                        {item.period}
+                                    </span>
+                                )}
+                                <span className="ml-auto inline-flex items-center gap-1 text-primary">
+                                    {item.embed_url ? (
+                                        <>
+                                            Встроить <LayoutDashboard className="size-3.5" />
+                                        </>
+                                    ) : (
+                                        <>
+                                            Открыть <ExternalLink className="size-3.5" />
+                                        </>
+                                    )}
                                 </span>
-                            )}
-                            <span className="inline-flex items-center gap-1 text-primary">
-                                {item.embed_url ? 'Встроить' : 'Открыть'} <ExternalLink className="size-3.5" />
-                            </span>
-                        </div>
-                    </a>
-                ))}
+                            </div>
+                        </>
+                    );
+                    const cls =
+                        'group flex flex-col rounded-2xl border border-border bg-card p-5 text-left transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md';
+                    return item.embed_url ? (
+                        <button key={item.id} type="button" onClick={() => setEmbed(item)} className={cls}>
+                            {inner}
+                        </button>
+                    ) : (
+                        <a key={item.id} href={item.link_url ?? '#'} target="_blank" rel="noreferrer" className={cls}>
+                            {inner}
+                        </a>
+                    );
+                })}
             </div>
+
+            {embed && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+                    onClick={() => setEmbed(null)}
+                >
+                    <div
+                        className="flex h-[80vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-xl"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-3">
+                            <div>
+                                <h3 className="font-semibold text-foreground">{embed.title}</h3>
+                                <p className="text-xs text-muted-foreground">Встроенный дашборд · {embed.source}</p>
+                            </div>
+                            <button
+                                onClick={() => setEmbed(null)}
+                                className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-accent"
+                                aria-label="Закрыть"
+                            >
+                                <X className="size-4" />
+                            </button>
+                        </div>
+                        <iframe src={embed.embed_url!} title={embed.title} className="h-full w-full flex-1 bg-background" />
+                    </div>
+                </div>
+            )}
         </PublicLayout>
     );
 }

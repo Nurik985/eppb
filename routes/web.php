@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ApplicationController as AdminApplicationController;
 use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\AssistantController;
@@ -27,6 +28,7 @@ Route::post('/assistant', [AssistantController::class, 'suggest'])
 // Модули портала: карта проектов, аналитика, полезные материалы.
 Route::get('/map', [MapController::class, 'index'])->name('map');
 Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
+Route::get('/analytics/embed/{key}', [AnalyticsController::class, 'embed'])->name('analytics.embed');
 Route::get('/resources', [ResourceController::class, 'index'])->name('resources');
 
 // Имитация интеграций: проверка ИИН/БИН в реестре юрлиц.
@@ -44,6 +46,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/applications/{application}', [ApplicationController::class, 'update'])->name('applications.update');
     Route::post('/applications/{application}/submit', [ApplicationController::class, 'submit'])->name('applications.submit');
     Route::get('/applications/{application}/submitted', [ApplicationController::class, 'submitted'])->name('applications.submitted');
+    Route::get('/applications/{application}/stage2', [ApplicationController::class, 'stage2'])->name('applications.stage2');
+    Route::post('/applications/{application}/stage2', [ApplicationController::class, 'submitStage2'])->name('applications.stage2.submit');
 });
 
 // Административный контур: конструктор услуг.
@@ -57,6 +61,10 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::get('/services/{service}/edit', [AdminServiceController::class, 'edit'])->name('services.edit');
     Route::put('/services/{service}', [AdminServiceController::class, 'update'])->name('services.update');
     Route::delete('/services/{service}', [AdminServiceController::class, 'destroy'])->name('services.destroy');
+
+    Route::get('/applications', [AdminApplicationController::class, 'index'])->name('applications.index');
+    Route::get('/applications/{application}', [AdminApplicationController::class, 'show'])->name('applications.show');
+    Route::patch('/applications/{application}/status', [AdminApplicationController::class, 'updateStatus'])->name('applications.status');
 });
 
 require __DIR__.'/settings.php';

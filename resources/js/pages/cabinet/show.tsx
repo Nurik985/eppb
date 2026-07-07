@@ -1,7 +1,7 @@
 import StatusBadge from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, CircleDot, FileText } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, CircleDot, FileText, FileUp } from 'lucide-react';
 
 type AnswerGroup = {
     title: string;
@@ -25,6 +25,7 @@ type CabinetShowProps = {
         service: { slug: string; title: string };
         answers: AnswerGroup[];
         events: ApplicationEvent[];
+        stage2: { available: boolean; submitted: boolean } | null;
     };
 };
 
@@ -63,6 +64,28 @@ export default function CabinetShow({ application }: CabinetShowProps) {
                         </Link>
                     </Button>
                 </div>
+
+                {/* II этап — расширенные данные */}
+                {application.stage2 &&
+                    (application.stage2.submitted ? (
+                        <div className="mt-6 flex items-center gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-4 text-sm">
+                            <CheckCircle2 className="size-5 shrink-0 text-primary" />
+                            <span className="text-foreground">Расширенные данные II этапа предоставлены и переданы на окончательное рассмотрение.</span>
+                        </div>
+                    ) : (
+                        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-500/40 bg-amber-500/5 p-4">
+                            <div className="flex items-center gap-3">
+                                <FileUp className="size-5 shrink-0 text-amber-600 dark:text-amber-400" />
+                                <div>
+                                    <p className="text-sm font-medium text-foreground">Требуется II этап</p>
+                                    <p className="text-xs text-muted-foreground">Предоставьте расширенный пакет документов для окончательного решения.</p>
+                                </div>
+                            </div>
+                            <Button asChild>
+                                <Link href={`/applications/${application.id}/stage2`}>Предоставить документы</Link>
+                            </Button>
+                        </div>
+                    ))}
 
                 <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_300px]">
                     {/* Обзор ответов */}

@@ -92,4 +92,77 @@ class ServicePresenter
             ])->values()->all())
             ->all();
     }
+
+    /**
+     * Человекочитаемый обзор ответов заявки, сгруппированный по этапам.
+     * Коды из справочников/списков разворачиваются в метки; расчётные и
+     * денежные поля форматируются; скрытые ветвлением поля пропускаются.
+     *
+     * @param  array<string, mixed>  $schema
+     * @param  array<string, mixed>  $data
+     * @return array<int, array{title: string, rows: array<int, array{label: string, value: string}>}>
+     */
+    public static function answers(?array $schema, array $data): array
+    {
+        $schema ??= ['steps' => []];
+        $conditions = new ConditionEvaluator;
+        $references = self::references($schema);
+        $data = ServiceSchema::make($schema)->withComputed($data);
+
+        $result = [];
+        foreach ($schema['steps'] ?? [] as $step) {
+            $rows = [];
+            foreach ($step['fields'] ?? [] as $field) {
+                if (! $conditions->passes($field['visibleWhen'] ?? null, $data)) {
+                    continue;
+                }
+                $value = $data[$field['id']] ?? null;
+                if ($value === null || $value === '' || $value === false) {
+                    continue;
+                }
+                $rows[] = [
+                    'label' => $field['label'] ?? $field['id'],
+                    'value' => self::formatValue($field, $value, $references),
+                ];
+            }
+            if (! empty($rows)) {
+                $result[] = ['title' => $step['title'] ?? '', 'rows' => $rows];
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param  array<string, mixed>  $field
+     * @param  array<string, array<int, array{value: string, label: string}>>  $references
+     */
+    private static function formatValue(array $field, mixed $value, array $references): string
+    {
+        $type = $field['type'] ?? 'text';
+
+        if ($type === 'checkbox') {
+            return $value ? 'Да' : 'Нет';
+        }
+
+        if ($type === 'money' || $type === 'computed') {
+            return number_format((float) $value, 0, '.', ' ').' ₸';
+        }
+
+        if (in_array($type, ['select', 'radio', 'region'], true)) {
+            $options = $field['options'] ?? null;
+            if ($type === 'region') {
+                $options = $references['regions'] ?? [];
+            } elseif (! empty($field['reference'])) {
+                $options = $references[$field['reference']] ?? [];
+            }
+            foreach ($options ?? [] as $opt) {
+                if ((string) ($opt['value'] ?? '') === (string) $value) {
+                    return (string) ($opt['label'] ?? $value);
+                }
+            }
+        }
+
+        return (string) $value;
+    }
 }

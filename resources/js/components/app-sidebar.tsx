@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { FileStack, Home, LayoutGrid, Layers, Wrench } from 'lucide-react';
+import { ClipboardList, FileStack, Home, LayoutGrid, Layers, Wrench } from 'lucide-react';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import PortalLogo from '@/components/portal-logo';
@@ -24,6 +24,7 @@ const mainNavItems: NavItem[] = [
 
 const adminNavItems: NavItem[] = [
     { title: 'Конструктор услуг', href: '/admin/services', icon: Wrench },
+    { title: 'Заявки', href: '/admin/applications', icon: ClipboardList },
 ];
 
 export function AppSidebar() {

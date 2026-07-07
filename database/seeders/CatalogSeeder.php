@@ -42,7 +42,28 @@ class CatalogSeeder extends Seeder
             'service_category_id' => $cat['leasing'],
             'organization_id' => $org['brk'] ?? null,
             'is_complex' => true,
-            'meta' => ['term' => 'до 7 лет', 'amount' => 'до 5 млрд ₸', 'rate' => 'от 5% годовых', 'audience' => 'Транспортные и логистические компании'],
+            'meta' => [
+                'term' => 'до 7 лет',
+                'amount' => 'до 5 млрд ₸',
+                'rate' => 'от 5% годовых',
+                'audience' => 'Транспортные и логистические компании',
+                // II этап — предоставление расширенных данных после предварительного одобрения.
+                'stage2' => [
+                    'title' => 'Расширенные данные и документы (II этап)',
+                    'description' => 'После предварительного рассмотрения предоставьте расширенный пакет для окончательного решения.',
+                    'fields' => [
+                        ['id' => 'collateral_type', 'type' => 'select', 'label' => 'Вид обеспечения', 'required' => true, 'options' => [
+                            ['value' => 'wagons', 'label' => 'Залог приобретаемых вагонов'],
+                            ['value' => 'guarantee', 'label' => 'Банковская гарантия'],
+                            ['value' => 'surety', 'label' => 'Поручительство'],
+                        ]],
+                        ['id' => 'collateral_value', 'type' => 'money', 'label' => 'Оценочная стоимость обеспечения, ₸', 'required' => true],
+                        ['id' => 'doc_financials_full', 'type' => 'file', 'label' => 'Финансовая отчётность за 3 года', 'required' => true],
+                        ['id' => 'doc_contract', 'type' => 'file', 'label' => 'Проект договора поставки вагонов', 'required' => true],
+                        ['id' => 'doc_collateral', 'type' => 'file', 'label' => 'Документы по обеспечению', 'required' => true],
+                    ],
+                ],
+            ],
             'schema' => $this->wagonsSchema(),
         ]);
 
