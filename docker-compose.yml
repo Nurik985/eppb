@@ -1,0 +1,45 @@
+# Docker-артефакт ЕППБ для экспертной оценки: `docker compose up --build`.
+# Приложение поднимется на http://localhost:8000 с автоматическими миграциями и сидами.
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    environment:
+      APP_NAME: "ЕППБ"
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: "http://localhost:8000"
+      LOG_CHANNEL: stderr
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_DATABASE: eppb
+      DB_USERNAME: eppb
+      DB_PASSWORD: secret
+      SESSION_DRIVER: file
+      CACHE_STORE: file
+      QUEUE_CONNECTION: sync
+      # Раскомментируйте для включения реального AI (Claude):
+      # ANTHROPIC_API_KEY: "sk-ant-..."
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: eppb
+      POSTGRES_USER: eppb
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - eppb-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eppb -d eppb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  eppb-db:

@@ -1,0 +1,16 @@
+.git
+node_modules
+vendor
+public/build
+public/hot
+public/storage
+storage/*.key
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
+database/database.sqlite
+.env
+.env.*
+!.env.example
+npm-debug.log
