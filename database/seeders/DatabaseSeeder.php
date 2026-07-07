@@ -15,11 +15,33 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Демо-аккаунты создаём напрямую (без фабрики/faker — недоступен в --no-dev).
+        User::updateOrCreate(
+            ['email' => 'demo@eppb.kz'],
+            [
+                'name' => 'Демо Предприниматель',
+                'password' => bcrypt('password'),
+                'email_verified_at' => now(),
+                'is_admin' => false,
+            ],
+        );
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        User::updateOrCreate(
+            ['email' => 'admin@eppb.kz'],
+            [
+                'name' => 'Администратор портала',
+                'password' => bcrypt('password'),
+                'email_verified_at' => now(),
+                'is_admin' => true,
+            ],
+        );
+
+        $this->call([
+            OrganizationSeeder::class,
+            ReferenceSeeder::class,
+            CatalogSeeder::class,
+            ProjectSeeder::class,
+            ContentSeeder::class,
         ]);
     }
 }
