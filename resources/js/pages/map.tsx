@@ -18,6 +18,8 @@ type MapProject = {
     industry_label: string;
     amount: number;
     status: string | null;
+    year_from: number | null;
+    year_to: number | null;
     period: string;
     description: string | null;
     external_url: string | null;
@@ -29,16 +31,20 @@ type MapProps = {
     byRegion: { code: string; label: string; count: number }[];
     filters: {
         organizations: string[];
+        regions: { code: string; label: string }[];
         industries: { code: string; label: string }[];
         statuses: string[];
+        years: number[];
     };
     stats: { total: number; regions: number; financed: number };
 };
 
 export default function ProjectsMap({ projects, byRegion, filters, stats }: MapProps) {
     const [org, setOrg] = useState<string | null>(null);
+    const [region, setRegion] = useState<string | null>(null);
     const [industry, setIndustry] = useState<string | null>(null);
     const [status, setStatus] = useState<string | null>(null);
+    const [year, setYear] = useState<string | null>(null);
 
     const mapRef = useRef<HTMLDivElement>(null);
     const mapInstance = useRef<L.Map | null>(null);
@@ -46,13 +52,18 @@ export default function ProjectsMap({ projects, byRegion, filters, stats }: MapP
 
     const filtered = useMemo(
         () =>
-            projects.filter(
-                (p) =>
+            projects.filter((p) => {
+                const y = year ? Number(year) : null;
+                const inPeriod = !y || ((p.year_from ?? y) <= y && (p.year_to ?? y) >= y);
+                return (
                     (!org || p.organization?.short_name === org) &&
+                    (!region || p.region === region) &&
                     (!industry || p.industry === industry) &&
-                    (!status || p.status === status),
-            ),
-        [projects, org, industry, status],
+                    (!status || p.status === status) &&
+                    inPeriod
+                );
+            }),
+        [projects, org, region, industry, status, year],
     );
 
     // Инициализация карты один раз.
@@ -96,6 +107,8 @@ export default function ProjectsMap({ projects, byRegion, filters, stats }: MapP
                         <div>${p.industry_label} · ${p.status ?? ''}</div>
                         ${p.period ? `<div>Период: ${p.period}</div>` : ''}
                     </div>
+                    ${p.description ? `<div style="margin-top:6px;font-size:12px;color:#666">${p.description}</div>` : ''}
+                    ${p.external_url ? `<a href="${p.external_url}" target="_blank" rel="noreferrer" style="display:inline-block;margin-top:8px;font-size:12px;font-weight:600;color:${color}">Подробнее о проекте →</a>` : ''}
                 </div>`,
             );
             layer.addLayer(marker);
@@ -103,7 +116,7 @@ export default function ProjectsMap({ projects, byRegion, filters, stats }: MapP
     }, [filtered]);
 
     const maxRegion = Math.max(...byRegion.map((r) => r.count), 1);
-    const hasFilter = org || industry || status;
+    const hasFilter = org || region || industry || status || year;
 
     return (
         <PublicLayout>
@@ -128,14 +141,18 @@ export default function ProjectsMap({ projects, byRegion, filters, stats }: MapP
                             Фильтры
                         </div>
                         <FilterSelect label="Организация" value={org} onChange={setOrg} options={filters.organizations.map((o) => ({ value: o, label: o }))} />
+                        <FilterSelect label="Регион" value={region} onChange={setRegion} options={filters.regions.map((r) => ({ value: r.code, label: r.label }))} />
                         <FilterSelect label="Отрасль" value={industry} onChange={setIndustry} options={filters.industries.map((i) => ({ value: i.code, label: i.label }))} />
                         <FilterSelect label="Статус" value={status} onChange={setStatus} options={filters.statuses.map((s) => ({ value: s, label: s }))} />
+                        <FilterSelect label="Период финансирования" value={year} onChange={setYear} options={filters.years.map((y) => ({ value: String(y), label: String(y) }))} />
                         {hasFilter && (
                             <button
                                 onClick={() => {
                                     setOrg(null);
+                                    setRegion(null);
                                     setIndustry(null);
                                     setStatus(null);
+                                    setYear(null);
                                 }}
                                 className="mt-1 text-xs text-primary hover:underline"
                             >

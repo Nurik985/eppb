@@ -74,12 +74,14 @@ it('отправляет заявку, пересчитывает расчётн
         ->assertRedirect("/applications/{$app->id}/submitted");
 
     $app->refresh();
-    expect($app->status)->toBe('submitted');
+    // Заявка отправлена и переведена внешней системой на рассмотрение (имитация интеграции).
+    expect($app->status)->toBe('in_review');
     expect($app->number)->toStartWith('ЕППБ-');
     // Расчётные поля пересчитаны на сервере (клиенту не доверяем).
     expect((float) $app->data['total_price'])->toBe(50000000.0);
     expect((float) $app->data['monthly_payment'])->toBe(708333.0);
-    expect($app->events()->where('type', 'status_changed')->count())->toBe(1);
+    // Таймлайн содержит имитацию интеграционного обмена (ЭЦП, BPM, статус).
+    expect($app->events()->count())->toBe(4);
 
     // Экран подтверждения для сложной услуги сообщает про II этап.
     $this->actingAs($this->user)

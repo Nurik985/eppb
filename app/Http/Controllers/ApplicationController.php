@@ -123,12 +123,10 @@ class ApplicationController extends Controller
             ],
         ]);
 
-        $application->events()->create([
-            'type' => 'status_changed',
-            'title' => 'Заявка отправлена',
-            'body' => 'Заявка принята порталом и передана на предварительное рассмотрение.',
-            'status' => 'submitted',
-        ]);
+        $this->recordSubmissionTimeline($application, $service);
+
+        // Внешняя система приняла заявку на рассмотрение (имитация статуса).
+        $application->update(['status' => 'in_review']);
 
         return redirect()->route('applications.submitted', $application);
     }
@@ -155,6 +153,43 @@ class ApplicationController extends Controller
                 'next_step' => $application->service->is_complex
                     ? 'После предварительного рассмотрения вам будет предложено предоставить расширенный пакет документов (II этап).'
                     : 'Отслеживайте статус заявки в личном кабинете.',
+            ],
+        ]);
+    }
+
+    /**
+     * Имитация интеграционного обмена при отправке заявки (п. 6.12):
+     * подписание ЭЦП, передача во внешнюю BPM-систему дочерней организации,
+     * присвоение статуса и уведомление. Отражается в таймлайне личного кабинета.
+     */
+    private function recordSubmissionTimeline(Application $application, Service $service): void
+    {
+        $org = $service->organization?->short_name
+            ?? $service->organization?->name
+            ?? 'дочерней организации';
+
+        $application->events()->createMany([
+            [
+                'type' => 'status_changed',
+                'title' => 'Заявка отправлена',
+                'body' => 'Заявка сформирована и принята порталом.',
+                'status' => 'submitted',
+            ],
+            [
+                'type' => 'notification',
+                'title' => 'Документы подписаны ЭЦП',
+                'body' => 'Пакет документов подписан электронной цифровой подписью (демо-сервис ЭЦП).',
+            ],
+            [
+                'type' => 'notification',
+                'title' => "Заявка передана в BPM-систему · {$org}",
+                'body' => 'Заявка направлена во внешнюю систему рассмотрения через Единую интеграционную шину Холдинга.',
+            ],
+            [
+                'type' => 'status_changed',
+                'title' => 'Принято на рассмотрение',
+                'body' => 'Заявка зарегистрирована во внешней системе и находится на предварительном рассмотрении.',
+                'status' => 'in_review',
             ],
         ]);
     }

@@ -78,7 +78,12 @@ export default function Analytics({ items, types }: AnalyticsProps) {
                         </div>
                         <h3 className="mt-3 font-semibold text-foreground">{item.title}</h3>
                         <p className="mt-1.5 flex-1 text-sm text-muted-foreground">{item.description}</p>
-                        <div className="mt-4 flex items-center justify-between border-t border-border/70 pt-3 text-xs text-muted-foreground">
+                        {item.source && (
+                            <p className="mt-3 text-xs text-muted-foreground">
+                                Источник: <span className="text-foreground">{item.source}</span>
+                            </p>
+                        )}
+                        <div className="mt-2 flex items-center justify-between border-t border-border/70 pt-3 text-xs text-muted-foreground">
                             {item.period && (
                                 <span className="inline-flex items-center gap-1">
                                     <CalendarClock className="size-3.5" />
@@ -86,7 +91,7 @@ export default function Analytics({ items, types }: AnalyticsProps) {
                                 </span>
                             )}
                             <span className="inline-flex items-center gap-1 text-primary">
-                                Открыть <ExternalLink className="size-3.5" />
+                                {item.embed_url ? 'Встроить' : 'Открыть'} <ExternalLink className="size-3.5" />
                             </span>
                         </div>
                     </a>

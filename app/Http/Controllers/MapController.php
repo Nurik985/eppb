@@ -31,6 +31,8 @@ class MapController extends Controller
                 'industry_label' => $industries[$p->industry] ?? $p->industry,
                 'amount' => (float) $p->amount,
                 'status' => $p->status,
+                'year_from' => $p->year_from,
+                'year_to' => $p->year_to,
                 'period' => trim(($p->year_from ? $p->year_from : '').($p->year_to ? '–'.$p->year_to : ''), '–'),
                 'description' => $p->description,
                 'external_url' => $p->external_url,
@@ -57,9 +59,13 @@ class MapController extends Controller
             'filters' => [
                 'organizations' => $projects->pluck('organization.short_name', 'organization.short_name')
                     ->filter()->values(),
+                'regions' => $projects->map(fn ($p) => ['code' => $p['region'], 'label' => $p['region_label']])
+                    ->unique('code')->sortBy('label')->values(),
                 'industries' => $projects->map(fn ($p) => ['code' => $p['industry'], 'label' => $p['industry_label']])
                     ->unique('code')->values(),
                 'statuses' => $projects->pluck('status')->unique()->filter()->values(),
+                'years' => $projects->flatMap(fn ($p) => array_filter([$p['year_from'], $p['year_to']]))
+                    ->unique()->sort()->values(),
             ],
             'stats' => [
                 'total' => $projects->count(),
