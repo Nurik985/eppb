@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import PublicLayout from '@/layouts/public-layout';
-import { useT } from '@/lib/i18n';
+import { useLocale, useT } from '@/lib/i18n';
 import type { ServiceCard } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { ArrowRight, Bot, Loader2, Sparkles, Wand2 } from 'lucide-react';
@@ -15,17 +15,27 @@ type AssistantProps = {
     result: { mode: string; items: SuggestItem[] } | null;
 };
 
-const examples = [
-    'Хочу открыть ферму и купить поголовье КРС, нужен льготный кредит',
-    'Мы экспортируем продукцию и хотим застраховать контракт от рисков',
-    'Нужны деньги на запуск небольшого бизнеса с нуля',
-    'Транспортная компания хочет приобрести вагоны в лизинг',
-];
+const examplesByLocale = {
+    ru: [
+        'Хочу открыть ферму и купить поголовье КРС, нужен льготный кредит',
+        'Мы экспортируем продукцию и хотим застраховать контракт от рисков',
+        'Нужны деньги на запуск небольшого бизнеса с нуля',
+        'Транспортная компания хочет приобрести вагоны в лизинг',
+    ],
+    kk: [
+        'Ферма ашып, ІҚМ басын сатып алғым келеді, жеңілдікті несие керек',
+        'Біз өнім экспорттаймыз және келісімшартты тәуекелдерден сақтандырғымыз келеді',
+        'Шағын бизнесті нөлден бастауға қаражат керек',
+        'Көлік компаниясы вагондарды лизингке алғысы келеді',
+    ],
+};
 
 export default function Assistant({ aiEnabled, situation: initial, result }: AssistantProps) {
     const [situation, setSituation] = useState(initial ?? '');
     const [loading, setLoading] = useState(false);
     const t = useT();
+    const { locale } = useLocale();
+    const examples = examplesByLocale[locale];
 
     const submit = (text?: string) => {
         const value = text ?? situation;
