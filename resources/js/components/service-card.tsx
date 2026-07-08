@@ -1,9 +1,11 @@
 import { Badge } from '@/components/ui/badge';
+import { useT } from '@/lib/i18n';
 import type { ServiceCard as ServiceCardType } from '@/types';
 import { Link } from '@inertiajs/react';
 import { ArrowRight, Layers } from 'lucide-react';
 
 export default function ServiceCard({ service }: { service: ServiceCardType }) {
+    const t = useT();
     return (
         <Link
             href={`/services/${service.slug}`}
@@ -33,21 +35,21 @@ export default function ServiceCard({ service }: { service: ServiceCardType }) {
                 {service.is_complex && (
                     <Badge variant="outline" className="gap-1">
                         <Layers className="size-3" />
-                        {service.steps_count} шагов
+                        {service.steps_count} {t('шагов')}
                     </Badge>
                 )}
-                {service.is_popular && <Badge className="bg-primary/10 text-primary">Популярное</Badge>}
+                {service.is_popular && <Badge className="bg-primary/10 text-primary">{t('Популярное')}</Badge>}
             </div>
 
             {service.meta?.amount && (
                 <div className="mt-3 text-sm">
-                    <span className="text-muted-foreground">Сумма: </span>
+                    <span className="text-muted-foreground">{t('Сумма: ')}</span>
                     <span className="font-medium text-foreground">{service.meta.amount}</span>
                 </div>
             )}
 
             <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary">
-                Подробнее <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                {t('Подробнее')} <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
             </span>
         </Link>
     );

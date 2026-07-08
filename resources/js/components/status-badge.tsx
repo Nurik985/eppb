@@ -1,3 +1,5 @@
+import { useT } from '@/lib/i18n';
+
 type Tone = 'muted' | 'blue' | 'amber' | 'green' | 'red';
 
 const statuses: Record<string, { label: string; tone: Tone }> = {
@@ -22,10 +24,11 @@ export function statusLabel(status: string): string {
 }
 
 export default function StatusBadge({ status }: { status: string }) {
+    const t = useT();
     const meta = statuses[status] ?? { label: status, tone: 'muted' as Tone };
     return (
         <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${toneClasses[meta.tone]}`}>
-            {meta.label}
+            {t(meta.label)}
         </span>
     );
 }

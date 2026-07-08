@@ -1,5 +1,6 @@
 import PublicLayout from '@/layouts/public-layout';
 import { formatMoney, plural } from '@/lib/format';
+import { useT } from '@/lib/i18n';
 import { Head } from '@inertiajs/react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -117,17 +118,18 @@ export default function ProjectsMap({ projects, byRegion, filters, stats }: MapP
 
     const maxRegion = Math.max(...byRegion.map((r) => r.count), 1);
     const hasFilter = org || region || industry || status || year;
+    const t = useT();
 
     return (
         <PublicLayout>
-            <Head title="Карта проектов" />
+            <Head title={t('Карта проектов')} />
 
             <div className="border-b border-border/70 bg-muted/30">
                 <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-                    <h1 className="text-3xl font-bold tracking-tight text-foreground">Карта проектов</h1>
+                    <h1 className="text-3xl font-bold tracking-tight text-foreground">{t('Карта проектов')}</h1>
                     <p className="mt-2 text-muted-foreground">
-                        {stats.total} {plural(stats.total, 'проект', 'проекта', 'проектов')} в {stats.regions}{' '}
-                        {plural(stats.regions, 'регионе', 'регионах', 'регионах')} · профинансировано {formatMoney(stats.financed)}.
+                        {stats.total} {t(plural(stats.total, 'проект', 'проекта', 'проектов'))} · {stats.regions}{' '}
+                        {t(plural(stats.regions, 'в регионе', 'в регионах', 'в регионах'))} · {formatMoney(stats.financed)}
                     </p>
                 </div>
             </div>
@@ -138,13 +140,13 @@ export default function ProjectsMap({ projects, byRegion, filters, stats }: MapP
                     <div className="rounded-2xl border border-border bg-card p-5">
                         <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground">
                             <SlidersHorizontal className="size-4" />
-                            Фильтры
+                            {t('Фильтры')}
                         </div>
-                        <FilterSelect label="Организация" value={org} onChange={setOrg} options={filters.organizations.map((o) => ({ value: o, label: o }))} />
-                        <FilterSelect label="Регион" value={region} onChange={setRegion} options={filters.regions.map((r) => ({ value: r.code, label: r.label }))} />
-                        <FilterSelect label="Отрасль" value={industry} onChange={setIndustry} options={filters.industries.map((i) => ({ value: i.code, label: i.label }))} />
-                        <FilterSelect label="Статус" value={status} onChange={setStatus} options={filters.statuses.map((s) => ({ value: s, label: s }))} />
-                        <FilterSelect label="Период финансирования" value={year} onChange={setYear} options={filters.years.map((y) => ({ value: String(y), label: String(y) }))} />
+                        <FilterSelect label={t('Организация')} value={org} onChange={setOrg} options={filters.organizations.map((o) => ({ value: o, label: o }))} />
+                        <FilterSelect label={t('Регион')} value={region} onChange={setRegion} options={filters.regions.map((r) => ({ value: r.code, label: r.label }))} />
+                        <FilterSelect label={t('Отрасль')} value={industry} onChange={setIndustry} options={filters.industries.map((i) => ({ value: i.code, label: i.label }))} />
+                        <FilterSelect label={t('Статус')} value={status} onChange={setStatus} options={filters.statuses.map((s) => ({ value: s, label: s }))} />
+                        <FilterSelect label={t('Период финансирования')} value={year} onChange={setYear} options={filters.years.map((y) => ({ value: String(y), label: String(y) }))} />
                         {hasFilter && (
                             <button
                                 onClick={() => {
@@ -156,14 +158,14 @@ export default function ProjectsMap({ projects, byRegion, filters, stats }: MapP
                                 }}
                                 className="mt-1 text-xs text-primary hover:underline"
                             >
-                                Сбросить фильтры
+                                {t('Сбросить фильтры')}
                             </button>
                         )}
-                        <p className="mt-3 text-xs text-muted-foreground">Показано: {filtered.length} из {stats.total}</p>
+                        <p className="mt-3 text-xs text-muted-foreground">{t('Показано: ')}{filtered.length} / {stats.total}</p>
                     </div>
 
                     <div className="rounded-2xl border border-border bg-card p-5">
-                        <h3 className="mb-3 text-sm font-semibold text-foreground">Проекты по регионам</h3>
+                        <h3 className="mb-3 text-sm font-semibold text-foreground">{t('Проекты по регионам')}</h3>
                         <ul className="space-y-2">
                             {byRegion.slice(0, 8).map((r) => (
                                 <li key={r.code}>

@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import PublicLayout from '@/layouts/public-layout';
+import { useT } from '@/lib/i18n';
 import type { ServiceFull } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { ArrowRight, Building2, CheckCircle2, Clock, Coins, Layers, Percent, Users } from 'lucide-react';
@@ -11,6 +12,7 @@ type ServiceShowProps = {
 
 export default function ServiceShow({ service }: ServiceShowProps) {
     const { auth } = usePage().props;
+    const t = useT();
     const steps = service.schema?.steps ?? [];
 
     // Роут /apply под auth-middleware: для гостя Laravel сам сохранит intended URL
@@ -32,11 +34,11 @@ export default function ServiceShow({ service }: ServiceShowProps) {
                 <div className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
                     <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                         <Link href="/" className="hover:text-foreground">
-                            Главная
+                            {t('Главная')}
                         </Link>
                         <span>/</span>
                         <Link href="/catalog" className="hover:text-foreground">
-                            Каталог
+                            {t('Каталог')}
                         </Link>
                         <span>/</span>
                         <span className="text-foreground">{service.title}</span>
@@ -51,10 +53,10 @@ export default function ServiceShow({ service }: ServiceShowProps) {
                         {service.is_complex && (
                             <Badge variant="outline" className="gap-1">
                                 <Layers className="size-3" />
-                                Многоэтапная · {steps.length} шагов
+                                {t('Многоэтапная')} · {steps.length} {t('шагов')}
                             </Badge>
                         )}
-                        {service.is_popular && <Badge className="bg-primary/10 text-primary">Популярное</Badge>}
+                        {service.is_popular && <Badge className="bg-primary/10 text-primary">{t('Популярное')}</Badge>}
                     </div>
 
                     <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">{service.title}</h1>
@@ -73,16 +75,16 @@ export default function ServiceShow({ service }: ServiceShowProps) {
                 <div className="space-y-8">
                     {service.description && (
                         <section>
-                            <h2 className="text-xl font-semibold text-foreground">Об услуге</h2>
+                            <h2 className="text-xl font-semibold text-foreground">{t('Об услуге')}</h2>
                             <p className="mt-3 leading-relaxed text-muted-foreground">{service.description}</p>
                         </section>
                     )}
 
                     {steps.length > 0 && (
                         <section>
-                            <h2 className="text-xl font-semibold text-foreground">Как проходит подача</h2>
+                            <h2 className="text-xl font-semibold text-foreground">{t('Как проходит подача')}</h2>
                             <p className="mt-1 text-sm text-muted-foreground">
-                                Услуга разбита на понятные шаги — с подсказками, автозаполнением и проверкой ошибок.
+                                {t('Услуга разбита на понятные шаги — с подсказками, автозаполнением и проверкой ошибок.')}
                             </p>
                             <ol className="mt-5 space-y-3">
                                 {steps.map((step, i) => (
@@ -96,7 +98,7 @@ export default function ServiceShow({ service }: ServiceShowProps) {
                                                 <p className="mt-0.5 text-sm text-muted-foreground">{step.description}</p>
                                             )}
                                             <p className="mt-1 text-xs text-muted-foreground">
-                                                {step.fields.length} полей
+                                                {step.fields.length} {t('полей')}
                                             </p>
                                         </div>
                                     </li>
@@ -115,7 +117,7 @@ export default function ServiceShow({ service }: ServiceShowProps) {
                                     <div key={m.label} className="flex items-start gap-3">
                                         <m.icon className="mt-0.5 size-4 text-muted-foreground" />
                                         <div>
-                                            <dt className="text-xs text-muted-foreground">{m.label}</dt>
+                                            <dt className="text-xs text-muted-foreground">{t(m.label)}</dt>
                                             <dd className="text-sm font-medium text-foreground">{m.value}</dd>
                                         </div>
                                     </div>
@@ -125,23 +127,23 @@ export default function ServiceShow({ service }: ServiceShowProps) {
 
                         <Button asChild size="lg" className="mt-6 w-full gap-1.5">
                             <Link href={applyHref}>
-                                Подать заявку
+                                {t('Подать заявку')}
                                 <ArrowRight className="size-4" />
                             </Link>
                         </Button>
 
                         <ul className="mt-5 space-y-2 text-sm text-muted-foreground">
-                            {['Пошаговый сценарий', 'Автоматические расчёты', 'Сохранение черновика'].map((t) => (
-                                <li key={t} className="flex items-center gap-2">
+                            {['Пошаговый сценарий', 'Автоматические расчёты', 'Сохранение черновика'].map((feat) => (
+                                <li key={feat} className="flex items-center gap-2">
                                     <CheckCircle2 className="size-4 text-primary" />
-                                    {t}
+                                    {t(feat)}
                                 </li>
                             ))}
                         </ul>
 
                         {!auth.user && (
                             <p className="mt-4 text-xs text-muted-foreground">
-                                Для подачи потребуется вход в личный кабинет.
+                                {t('Для подачи потребуется вход в личный кабинет.')}
                             </p>
                         )}
                     </div>

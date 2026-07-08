@@ -1,3 +1,4 @@
+import { useT } from '@/lib/i18n';
 import { Sprout } from 'lucide-react';
 
 type PortalLogoProps = {
@@ -9,6 +10,7 @@ type PortalLogoProps = {
  * Логотип портала ЕППБ. Росток — отсылка к тополю «Байтерек».
  */
 export default function PortalLogo({ withText = true, subtitle = true }: PortalLogoProps) {
+    const t = useT();
     return (
         <div className="flex items-center gap-2.5">
             <div className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
@@ -18,7 +20,7 @@ export default function PortalLogo({ withText = true, subtitle = true }: PortalL
                 <div className="grid leading-tight">
                     <span className="text-[15px] font-bold tracking-tight text-foreground">ЕППБ</span>
                     {subtitle && (
-                        <span className="text-[11px] text-muted-foreground">Единый портал поддержки бизнеса</span>
+                        <span className="text-[11px] text-muted-foreground">{t('Единый портал поддержки бизнеса')}</span>
                     )}
                 </div>
             )}

@@ -1,4 +1,5 @@
 import PortalLogo from '@/components/portal-logo';
+import { LanguageSwitcher, useT } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import WizardField from '@/components/wizard/wizard-field';
 import { computeValues, isFieldVisible } from '@/lib/schema-engine';
@@ -16,6 +17,7 @@ type Stage2Props = {
 };
 
 export default function Stage2({ application, service, schema, references }: Stage2Props) {
+    const t = useT();
     const step = schema.steps[0];
     const [values, setValues] = useState<FormValues>(() => computeValues(schema, { ...application.data }));
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -74,19 +76,19 @@ export default function Stage2({ application, service, schema, references }: Sta
                     <Link href="/">
                         <PortalLogo subtitle={false} />
                     </Link>
-                    <span className="text-sm text-muted-foreground">Заявка №{application.number}</span>
+                    <div className="flex items-center gap-2"><LanguageSwitcher /><span className="text-sm text-muted-foreground">{t('Заявка')} №{application.number}</span></div>
                 </div>
             </header>
 
             <div className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6">
                 <Link href={`/cabinet/applications/${application.id}`} className="text-sm text-muted-foreground hover:text-foreground">
-                    ← Назад к заявке
+                    ← {t('Назад к заявке')}
                 </Link>
 
                 {application.submitted && (
                     <div className="mt-4 flex items-center gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-4 text-sm">
                         <CheckCircle2 className="size-5 shrink-0 text-primary" />
-                        <span className="text-foreground">Документы II этапа уже отправлены. Вы можете обновить данные и отправить повторно.</span>
+                        <span className="text-foreground">{t('Документы II этапа уже отправлены. Вы можете обновить данные и отправить повторно.')}</span>
                     </div>
                 )}
 
@@ -96,7 +98,7 @@ export default function Stage2({ application, service, schema, references }: Sta
                             <Layers className="size-5" />
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-primary">II этап</p>
+                            <p className="text-sm font-medium text-primary">{t('II этап')}</p>
                             <h1 className="text-xl font-bold text-foreground">{step.title}</h1>
                         </div>
                     </div>
@@ -118,7 +120,7 @@ export default function Stage2({ application, service, schema, references }: Sta
                     <div className="mt-8 flex justify-end border-t border-border/70 pt-6">
                         <Button onClick={submit} disabled={submitting} size="lg">
                             {submitting ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
-                            {schema.settings?.submitLabel ?? 'Отправить документы II этапа'}
+                            {schema.settings?.submitLabel ? t(schema.settings.submitLabel) : t('Отправить документы II этапа')}
                         </Button>
                     </div>
                 </div>

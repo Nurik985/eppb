@@ -1,4 +1,5 @@
 import { formatTenge } from '@/lib/format';
+import { useT } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import type { FieldOption, SchemaField } from '@/types/schema';
 import { BadgeCheck, Info, Loader2, Search } from 'lucide-react';
@@ -25,6 +26,7 @@ const inputClass =
     'h-11 w-full rounded-xl border bg-background px-3.5 text-sm shadow-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring/40';
 
 export default function WizardField({ field, value, onChange, error, options, onBinLookup }: WizardFieldProps) {
+    const t = useT();
     const borderClass = error ? 'border-destructive focus-visible:border-destructive' : 'border-input focus-visible:border-ring';
     const [lookingUp, setLookingUp] = useState(false);
     const [company, setCompany] = useState<CompanyLookup | null>(null);
@@ -83,7 +85,7 @@ export default function WizardField({ field, value, onChange, error, options, on
                         onChange={(e) => onChange(e.target.value)}
                         className={cn(inputClass, borderClass)}
                     >
-                        <option value="">Выберите…</option>
+                        <option value="">{t('Выберите…')}</option>
                         {options.map((opt) => (
                             <option key={opt.value} value={opt.value}>
                                 {opt.label}
@@ -144,7 +146,7 @@ export default function WizardField({ field, value, onChange, error, options, on
                             )}
                         />
                         {typeof value === 'string' && value && (
-                            <p className="mt-1 text-xs text-muted-foreground">Прикреплено: {value}</p>
+                            <p className="mt-1 text-xs text-muted-foreground">{t('Прикреплено: ')}{value}</p>
                         )}
                     </div>
                 );
@@ -200,7 +202,7 @@ export default function WizardField({ field, value, onChange, error, options, on
                                     className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-xl border border-input px-3.5 text-sm font-medium text-foreground transition-colors hover:bg-accent disabled:opacity-50"
                                 >
                                     {lookingUp ? <Loader2 className="size-4 animate-spin" /> : <Search className="size-4" />}
-                                    Проверить
+                                    {t('Проверить')}
                                 </button>
                             )}
                         </div>
@@ -212,7 +214,7 @@ export default function WizardField({ field, value, onChange, error, options, on
                                 </div>
                                 {company.address && <p className="mt-1 text-xs text-muted-foreground">{company.address}</p>}
                                 {company.oked && <p className="text-xs text-muted-foreground">{company.oked}</p>}
-                                <p className="mt-1 text-xs text-primary">Данные подтянуты из реестра юрлиц</p>
+                                <p className="mt-1 text-xs text-primary">{t('Данные подтянуты из реестра юрлиц')}</p>
                             </div>
                         )}
                     </div>

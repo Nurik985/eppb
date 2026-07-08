@@ -2,6 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import PublicLayout from '@/layouts/public-layout';
 import { formatMoney, plural } from '@/lib/format';
+import { useT } from '@/lib/i18n';
 import { iconByName } from '@/lib/icon-map';
 import type { Category, PortalStats, ServiceCard } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
@@ -41,6 +42,7 @@ const modules = [
 
 export default function Welcome({ categories, popularServices, featuredServices, stats }: WelcomeProps) {
     const [query, setQuery] = useState('');
+    const t = useT();
 
     const submitSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -49,7 +51,7 @@ export default function Welcome({ categories, popularServices, featuredServices,
 
     return (
         <PublicLayout>
-            <Head title="Единый портал поддержки бизнеса" />
+            <Head title={t('Единый портал поддержки бизнеса')} />
 
             {/* Hero */}
             <section className="relative overflow-hidden border-b border-border/70">
@@ -59,14 +61,13 @@ export default function Welcome({ categories, popularServices, featuredServices,
                     <div className="mx-auto max-w-3xl text-center">
                         <Badge variant="secondary" className="mb-5 gap-1.5 px-3 py-1 text-xs">
                             <Sparkles className="size-3.5" />
-                            Платформа-конструктор мер поддержки
+                            {t('Платформа-конструктор мер поддержки')}
                         </Badge>
                         <h1 className="text-balance text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-                            Все меры поддержки бизнеса — <span className="text-primary">в одном окне</span>
+                            {t('Все меры поддержки бизнеса — ')}<span className="text-primary">{t('в одном окне')}</span>
                         </h1>
                         <p className="mx-auto mt-5 max-w-2xl text-pretty text-lg text-muted-foreground">
-                            Найдите подходящую меру поддержки Холдинга «Байтерек», подайте заявку пошагово и
-                            отслеживайте статус — без хождения по разным сайтам и объёмных анкет.
+                            {t('Найдите подходящую меру поддержки Холдинга «Байтерек», подайте заявку пошагово и отслеживайте статус — без хождения по разным сайтам и объёмных анкет.')}
                         </p>
 
                         <form onSubmit={submitSearch} className="mx-auto mt-8 flex max-w-xl items-center gap-2">
@@ -75,12 +76,12 @@ export default function Welcome({ categories, popularServices, featuredServices,
                                 <input
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
-                                    placeholder="Например: кредит на животноводство или лизинг"
+                                    placeholder={t('Например: кредит на животноводство или лизинг')}
                                     className="h-12 w-full rounded-xl border border-input bg-background pr-4 pl-11 text-sm shadow-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
                                 />
                             </div>
                             <Button type="submit" size="lg" className="h-12 shrink-0">
-                                Найти
+                                {t('Найти')}
                             </Button>
                         </form>
 
@@ -88,13 +89,13 @@ export default function Welcome({ categories, popularServices, featuredServices,
                             <Button asChild variant="outline" size="sm" className="gap-1.5">
                                 <Link href="/catalog">
                                     <Layers className="size-4" />
-                                    Весь каталог
+                                    {t('Весь каталог')}
                                 </Link>
                             </Button>
                             <Button asChild variant="ghost" size="sm" className="gap-1.5 text-primary">
                                 <Link href="/assistant">
                                     <Bot className="size-4" />
-                                    Подобрать с AI-помощником
+                                    {t('Подобрать с AI-помощником')}
                                 </Link>
                             </Button>
                         </div>
@@ -103,10 +104,10 @@ export default function Welcome({ categories, popularServices, featuredServices,
                     {/* Stats */}
                     <div className="mx-auto mt-14 grid max-w-4xl grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border/70 bg-border/70 shadow-sm sm:grid-cols-4">
                         {[
-                            { value: stats.services, label: plural(stats.services, 'услуга', 'услуги', 'услуг') },
-                            { value: stats.organizations, label: 'организаций' },
-                            { value: formatMoney(stats.financed), label: 'профинансировано' },
-                            { value: stats.projects, label: plural(stats.projects, 'проект', 'проекта', 'проектов') },
+                            { value: stats.services, label: t(plural(stats.services, 'услуга', 'услуги', 'услуг')) },
+                            { value: stats.organizations, label: t('организаций') },
+                            { value: formatMoney(stats.financed), label: t('профинансировано') },
+                            { value: stats.projects, label: t(plural(stats.projects, 'проект', 'проекта', 'проектов')) },
                         ].map((s, i) => (
                             <div key={i} className="bg-card px-5 py-6 text-center">
                                 <div className="text-2xl font-bold text-foreground sm:text-3xl">{s.value}</div>
@@ -122,13 +123,13 @@ export default function Welcome({ categories, popularServices, featuredServices,
                 <div className="mb-8 flex items-end justify-between gap-4">
                     <div>
                         <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                            Направления поддержки
+                            {t('Направления поддержки')}
                         </h2>
-                        <p className="mt-2 text-muted-foreground">Выберите направление, чтобы подобрать меру поддержки.</p>
+                        <p className="mt-2 text-muted-foreground">{t('Выберите направление, чтобы подобрать меру поддержки.')}</p>
                     </div>
                     <Button asChild variant="ghost" className="hidden gap-1.5 sm:flex">
                         <Link href="/catalog">
-                            Все услуги <ArrowRight className="size-4" />
+                            {t('Все услуги')} <ArrowRight className="size-4" />
                         </Link>
                     </Button>
                 </div>
@@ -149,7 +150,7 @@ export default function Welcome({ categories, popularServices, featuredServices,
                                 </div>
                                 <h3 className="mt-4 font-semibold text-foreground">{cat.name}</h3>
                                 <p className="mt-1 text-sm text-muted-foreground">
-                                    {cat.services_count} {plural(cat.services_count, 'услуга', 'услуги', 'услуг')}
+                                    {cat.services_count} {t(plural(cat.services_count, 'услуга', 'услуги', 'услуг'))}
                                 </p>
                             </Link>
                         );
@@ -162,10 +163,10 @@ export default function Welcome({ categories, popularServices, featuredServices,
                 <section className="border-y border-border/70 bg-muted/30">
                     <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
                         <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                            Популярные и сложные услуги
+                            {t('Популярные и сложные услуги')}
                         </h2>
                         <p className="mt-2 text-muted-foreground">
-                            Даже многоэтапная услуга проходится как понятный пошаговый сценарий.
+                            {t('Даже многоэтапная услуга проходится как понятный пошаговый сценарий.')}
                         </p>
                         <div className="mt-8 grid gap-5 lg:grid-cols-2">
                             {featuredServices.map((service) => (
@@ -180,10 +181,10 @@ export default function Welcome({ categories, popularServices, featuredServices,
             {popularServices.length > 0 && (
                 <section className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
                     <div className="mb-8 flex items-end justify-between gap-4">
-                        <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Частые запросы</h2>
+                        <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{t('Частые запросы')}</h2>
                         <Button asChild variant="ghost" className="hidden gap-1.5 sm:flex">
                             <Link href="/catalog">
-                                Смотреть все <ArrowRight className="size-4" />
+                                {t('Смотреть все')} <ArrowRight className="size-4" />
                             </Link>
                         </Button>
                     </div>
@@ -199,8 +200,8 @@ export default function Welcome({ categories, popularServices, featuredServices,
             <section id="how" className="border-t border-border/70 bg-muted/30">
                 <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
                     <div className="mx-auto max-w-2xl text-center">
-                        <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Как это работает</h2>
-                        <p className="mt-2 text-muted-foreground">Путь предпринимателя от выбора услуги до результата.</p>
+                        <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{t('Как это работает')}</h2>
+                        <p className="mt-2 text-muted-foreground">{t('Путь предпринимателя от выбора услуги до результата.')}</p>
                     </div>
                     <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
                         {journeySteps.map((step, i) => (
@@ -209,8 +210,8 @@ export default function Welcome({ categories, popularServices, featuredServices,
                                 <div className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
                                     <step.icon className="size-5.5" />
                                 </div>
-                                <h3 className="mt-4 font-semibold text-foreground">{step.title}</h3>
-                                <p className="mt-1.5 text-sm text-muted-foreground">{step.text}</p>
+                                <h3 className="mt-4 font-semibold text-foreground">{t(step.title)}</h3>
+                                <p className="mt-1.5 text-sm text-muted-foreground">{t(step.text)}</p>
                             </div>
                         ))}
                     </div>
@@ -229,10 +230,10 @@ export default function Welcome({ categories, popularServices, featuredServices,
                             <div className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
                                 <m.icon className="size-5.5" />
                             </div>
-                            <h3 className="mt-4 font-semibold text-foreground">{m.title}</h3>
-                            <p className="mt-1.5 flex-1 text-sm text-muted-foreground">{m.text}</p>
+                            <h3 className="mt-4 font-semibold text-foreground">{t(m.title)}</h3>
+                            <p className="mt-1.5 flex-1 text-sm text-muted-foreground">{t(m.text)}</p>
                             <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary">
-                                Открыть <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                                {t('Открыть')} <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
                             </span>
                         </Link>
                     ))}
@@ -244,14 +245,14 @@ export default function Welcome({ categories, popularServices, featuredServices,
                 <div className="relative overflow-hidden rounded-3xl bg-primary px-6 py-14 text-center text-primary-foreground sm:px-12">
                     <div className="pointer-events-none absolute -top-16 -right-10 h-64 w-64 rounded-full bg-white/10 blur-2xl" />
                     <h2 className="relative text-2xl font-bold tracking-tight sm:text-3xl">
-                        Готовы найти меру поддержки для вашего бизнеса?
+                        {t('Готовы найти меру поддержки для вашего бизнеса?')}
                     </h2>
                     <p className="relative mx-auto mt-3 max-w-xl text-primary-foreground/80">
-                        Начните с каталога или доверьтесь AI-помощнику — он подберёт услугу по вашей ситуации.
+                        {t('Начните с каталога или доверьтесь AI-помощнику — он подберёт услугу по вашей ситуации.')}
                     </p>
                     <div className="relative mt-7 flex flex-wrap items-center justify-center gap-3">
                         <Button asChild size="lg" variant="secondary">
-                            <Link href="/catalog">Перейти в каталог</Link>
+                            <Link href="/catalog">{t('Перейти в каталог')}</Link>
                         </Button>
                         <Button
                             asChild
@@ -261,7 +262,7 @@ export default function Welcome({ categories, popularServices, featuredServices,
                         >
                             <Link href="/assistant">
                                 <Bot className="size-4" />
-                                AI-помощник
+                                {t('AI-помощник')}
                             </Link>
                         </Button>
                     </div>
@@ -272,6 +273,7 @@ export default function Welcome({ categories, popularServices, featuredServices,
 }
 
 function FeaturedCard({ service }: { service: ServiceCard }) {
+    const t = useT();
     return (
         <Link
             href={`/services/${service.slug}`}
@@ -283,8 +285,8 @@ function FeaturedCard({ service }: { service: ServiceCard }) {
                         {service.category.name}
                     </Badge>
                 )}
-                {service.is_complex && <Badge variant="outline">{service.steps_count} шагов</Badge>}
-                {service.is_popular && <Badge className="bg-primary/10 text-primary">Популярное</Badge>}
+                {service.is_complex && <Badge variant="outline">{service.steps_count} {t('шагов')}</Badge>}
+                {service.is_popular && <Badge className="bg-primary/10 text-primary">{t('Популярное')}</Badge>}
             </div>
             <h3 className="mt-4 text-lg font-semibold text-foreground">{service.title}</h3>
             <p className="mt-2 flex-1 text-sm text-muted-foreground">{service.summary}</p>
@@ -293,19 +295,19 @@ function FeaturedCard({ service }: { service: ServiceCard }) {
                 <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
                     {service.meta.amount && (
                         <div>
-                            <span className="text-muted-foreground">Сумма: </span>
+                            <span className="text-muted-foreground">{t('Сумма: ')}</span>
                             <span className="font-medium text-foreground">{service.meta.amount}</span>
                         </div>
                     )}
                     {service.meta.term && (
                         <div>
-                            <span className="text-muted-foreground">Срок: </span>
+                            <span className="text-muted-foreground">{t('Срок: ')}</span>
                             <span className="font-medium text-foreground">{service.meta.term}</span>
                         </div>
                     )}
                     {service.meta.rate && (
                         <div>
-                            <span className="text-muted-foreground">Ставка: </span>
+                            <span className="text-muted-foreground">{t('Ставка: ')}</span>
                             <span className="font-medium text-foreground">{service.meta.rate}</span>
                         </div>
                     )}
@@ -315,7 +317,7 @@ function FeaturedCard({ service }: { service: ServiceCard }) {
             <div className="mt-5 flex items-center justify-between border-t border-border/70 pt-4">
                 <span className="text-xs text-muted-foreground">{service.organization?.name}</span>
                 <span className="inline-flex items-center gap-1 text-sm font-medium text-primary">
-                    Подать заявку <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                    {t('Подать заявку')} <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
                 </span>
             </div>
         </Link>
@@ -323,6 +325,7 @@ function FeaturedCard({ service }: { service: ServiceCard }) {
 }
 
 function ServiceMini({ service }: { service: ServiceCard }) {
+    const t = useT();
     return (
         <Link
             href={`/services/${service.slug}`}
@@ -340,12 +343,12 @@ function ServiceMini({ service }: { service: ServiceCard }) {
                         {service.organization.short_name}
                     </span>
                 )}
-                {service.is_complex && <Badge variant="outline">{service.steps_count} шагов</Badge>}
+                {service.is_complex && <Badge variant="outline">{service.steps_count} {t('шагов')}</Badge>}
             </div>
             <h3 className="mt-3 font-semibold text-foreground">{service.title}</h3>
             <p className="mt-1.5 line-clamp-2 flex-1 text-sm text-muted-foreground">{service.summary}</p>
             <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary">
-                Подробнее <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                {t('Подробнее')} <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
             </span>
         </Link>
     );

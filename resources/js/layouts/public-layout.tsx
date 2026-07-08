@@ -1,6 +1,7 @@
 import PortalLogo from '@/components/portal-logo';
 import { Button } from '@/components/ui/button';
 import { useAppearance } from '@/hooks/use-appearance';
+import { LanguageSwitcher, useT } from '@/lib/i18n';
 import { dashboard, login } from '@/routes';
 import { Link, usePage } from '@inertiajs/react';
 import { LayoutDashboard, LogIn, Moon, Sun } from 'lucide-react';
@@ -15,6 +16,7 @@ const navItems = [
 
 function ThemeToggle() {
     const { resolvedAppearance, updateAppearance } = useAppearance();
+    const t = useT();
     const isDark = resolvedAppearance === 'dark';
 
     return (
@@ -22,7 +24,7 @@ function ThemeToggle() {
             type="button"
             onClick={() => updateAppearance(isDark ? 'light' : 'dark')}
             className="flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-            aria-label="Переключить тему"
+            aria-label={t('Переключить тему')}
         >
             {isDark ? <Sun className="size-4.5" /> : <Moon className="size-4.5" />}
         </button>
@@ -31,6 +33,7 @@ function ThemeToggle() {
 
 export default function PublicLayout({ children }: PropsWithChildren) {
     const { auth } = usePage().props;
+    const t = useT();
 
     return (
         <div className="flex min-h-screen flex-col bg-background text-foreground">
@@ -47,25 +50,26 @@ export default function PublicLayout({ children }: PropsWithChildren) {
                                 href={item.href}
                                 className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                             >
-                                {item.label}
+                                {t(item.label)}
                             </Link>
                         ))}
                     </nav>
 
                     <div className="flex items-center gap-2">
+                        <LanguageSwitcher className="hidden sm:inline-flex" />
                         <ThemeToggle />
                         {auth.user ? (
                             <Button asChild size="sm">
                                 <Link href={dashboard()}>
                                     <LayoutDashboard className="size-4" />
-                                    Личный кабинет
+                                    {t('Личный кабинет')}
                                 </Link>
                             </Button>
                         ) : (
                             <Button asChild size="sm">
                                 <Link href={login()}>
                                     <LogIn className="size-4" />
-                                    Войти
+                                    {t('Войти')}
                                 </Link>
                             </Button>
                         )}
@@ -80,38 +84,37 @@ export default function PublicLayout({ children }: PropsWithChildren) {
                     <div className="max-w-sm">
                         <PortalLogo />
                         <p className="mt-4 text-sm text-muted-foreground">
-                            Единая цифровая точка входа к мерам поддержки бизнеса Холдинга «Байтерек» и его дочерних
-                            организаций.
+                            {t('Единая цифровая точка входа к мерам поддержки бизнеса Холдинга «Байтерек» и его дочерних организаций.')}
                         </p>
                     </div>
                     <div>
-                        <h4 className="text-sm font-semibold text-foreground">Разделы</h4>
+                        <h4 className="text-sm font-semibold text-foreground">{t('Разделы')}</h4>
                         <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
                             {navItems.map((item) => (
                                 <li key={item.href}>
                                     <Link href={item.href} className="transition-colors hover:text-foreground">
-                                        {item.label}
+                                        {t(item.label)}
                                     </Link>
                                 </li>
                             ))}
                         </ul>
                     </div>
                     <div>
-                        <h4 className="text-sm font-semibold text-foreground">Холдинг</h4>
+                        <h4 className="text-sm font-semibold text-foreground">{t('Холдинг')}</h4>
                         <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-                            <li>АО «НУХ «Байтерек»</li>
+                            <li>{t('АО «НУХ «Байтерек»')}</li>
                             <li>
                                 <a href="https://bgov.kz" className="transition-colors hover:text-foreground">
                                     bgov.kz
                                 </a>
                             </li>
-                            <li>Демо-версия MVP</li>
+                            <li>{t('Демо-версия MVP')}</li>
                         </ul>
                     </div>
                 </div>
                 <div className="border-t border-border/70">
                     <div className="mx-auto w-full max-w-7xl px-4 py-4 text-xs text-muted-foreground sm:px-6 lg:px-8">
-                        © {new Date().getFullYear()} ЕППБ · Прототип для конкурса Astana Hub
+                        © {new Date().getFullYear()} ЕППБ · {t('Прототип для конкурса Astana Hub')}
                     </div>
                 </div>
             </footer>

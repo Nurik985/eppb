@@ -1,4 +1,5 @@
 import PublicLayout from '@/layouts/public-layout';
+import { useT } from '@/lib/i18n';
 import { iconByName } from '@/lib/icon-map';
 import { Head, router } from '@inertiajs/react';
 import { BookOpen, Clock } from 'lucide-react';
@@ -21,28 +22,29 @@ type ResourcesProps = {
 };
 
 export default function Resources({ resources, categories, filters }: ResourcesProps) {
+    const t = useT();
     const setCategory = (category: string | null) => {
         router.get('/resources', category ? { category } : {}, { preserveScroll: true, preserveState: true });
     };
 
     return (
         <PublicLayout>
-            <Head title="Материалы и инструменты" />
+            <Head title={t('Материалы и инструменты')} />
 
             <div className="border-b border-border/70 bg-muted/30">
                 <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
                     <div className="flex items-center gap-2 text-primary">
                         <BookOpen className="size-5" />
-                        <span className="text-sm font-medium">Развитие бизнеса</span>
+                        <span className="text-sm font-medium">{t('Развитие бизнеса')}</span>
                     </div>
-                    <h1 className="mt-1 text-3xl font-bold tracking-tight text-foreground">Материалы и инструменты</h1>
+                    <h1 className="mt-1 text-3xl font-bold tracking-tight text-foreground">{t('Материалы и инструменты')}</h1>
                     <p className="mt-2 max-w-2xl text-muted-foreground">
-                        База знаний, инструкции, шаблоны документов, чек-листы и калькуляторы для запуска и развития бизнеса.
+                        {t('База знаний, инструкции, шаблоны документов, чек-листы и калькуляторы для запуска и развития бизнеса.')}
                     </p>
 
                     <div className="mt-5 flex flex-wrap gap-2">
                         <FilterChip active={!filters.category} onClick={() => setCategory(null)}>
-                            Все
+                            {t('Все')}
                         </FilterChip>
                         {categories.map((c) => (
                             <FilterChip key={c} active={filters.category === c} onClick={() => setCategory(c)}>
@@ -77,7 +79,7 @@ export default function Resources({ resources, categories, filters }: ResourcesP
                             {item.reading_minutes && (
                                 <div className="mt-3 inline-flex items-center gap-1 text-xs text-muted-foreground">
                                     <Clock className="size-3.5" />
-                                    {item.reading_minutes} мин
+                                    {item.reading_minutes} {t('мин')}
                                 </div>
                             )}
                         </a>

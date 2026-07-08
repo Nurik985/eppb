@@ -7,14 +7,16 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { useCurrentUrl } from '@/hooks/use-current-url';
+import { useT } from '@/lib/i18n';
 import type { NavItem } from '@/types';
 
 export function NavMain({ items = [], label = 'Навигация' }: { items: NavItem[]; label?: string }) {
     const { isCurrentUrl } = useCurrentUrl();
+    const t = useT();
 
     return (
         <SidebarGroup className="px-2 py-0">
-            <SidebarGroupLabel>{label}</SidebarGroupLabel>
+            <SidebarGroupLabel>{t(label)}</SidebarGroupLabel>
             <SidebarMenu>
                 {items.map((item) => (
                     <SidebarMenuItem key={item.title}>
@@ -25,7 +27,7 @@ export function NavMain({ items = [], label = 'Навигация' }: { items: N
                         >
                             <Link href={item.href} prefetch>
                                 {item.icon && <item.icon />}
-                                <span>{item.title}</span>
+                                <span>{t(item.title)}</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>

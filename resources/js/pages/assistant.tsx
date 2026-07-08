@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import PublicLayout from '@/layouts/public-layout';
+import { useT } from '@/lib/i18n';
 import type { ServiceCard } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { ArrowRight, Bot, Loader2, Sparkles, Wand2 } from 'lucide-react';
@@ -24,6 +25,7 @@ const examples = [
 export default function Assistant({ aiEnabled, situation: initial, result }: AssistantProps) {
     const [situation, setSituation] = useState(initial ?? '');
     const [loading, setLoading] = useState(false);
+    const t = useT();
 
     const submit = (text?: string) => {
         const value = text ?? situation;
@@ -39,16 +41,16 @@ export default function Assistant({ aiEnabled, situation: initial, result }: Ass
 
     return (
         <PublicLayout>
-            <Head title="AI-помощник по подбору услуги" />
+            <Head title={t('AI-помощник по подбору услуги')} />
 
             <section className="border-b border-border/70 bg-gradient-to-b from-accent/50 to-background">
                 <div className="mx-auto w-full max-w-3xl px-4 py-14 text-center sm:px-6 lg:px-8">
                     <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
                         <Bot className="size-7" />
                     </div>
-                    <h1 className="mt-5 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">AI-помощник</h1>
+                    <h1 className="mt-5 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">{t('AI-помощник')}</h1>
                     <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-                        Опишите свою ситуацию простыми словами — подберём подходящие меры поддержки Холдинга «Байтерек».
+                        {t('Опишите свою ситуацию простыми словами — подберём подходящие меры поддержки Холдинга «Байтерек».')}
                     </p>
 
                     <div className="mx-auto mt-8 max-w-xl">
@@ -59,22 +61,22 @@ export default function Assistant({ aiEnabled, situation: initial, result }: Ass
                                 if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) submit();
                             }}
                             rows={3}
-                            placeholder="Например: у меня крестьянское хозяйство, хочу расширить поголовье и купить корма…"
+                            placeholder={t('Например: у меня крестьянское хозяйство, хочу расширить поголовье и купить корма…')}
                             className="w-full resize-none rounded-2xl border border-input bg-background p-4 text-sm shadow-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
                         />
                         <div className="mt-3 flex items-center justify-between gap-3">
                             <span className="text-xs text-muted-foreground">
                                 {aiEnabled ? (
                                     <span className="inline-flex items-center gap-1 text-primary">
-                                        <Sparkles className="size-3.5" /> AI активен
+                                        <Sparkles className="size-3.5" /> {t('AI активен')}
                                     </span>
                                 ) : (
-                                    'Демо-режим подбора'
+                                    t('Демо-режим подбора')
                                 )}
                             </span>
                             <Button onClick={() => submit()} disabled={loading || situation.trim().length < 5}>
                                 {loading ? <Loader2 className="size-4 animate-spin" /> : <Wand2 className="size-4" />}
-                                Подобрать
+                                {t('Подобрать')}
                             </Button>
                         </div>
                     </div>
@@ -98,10 +100,10 @@ export default function Assistant({ aiEnabled, situation: initial, result }: Ass
             {result && (
                 <section className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
                     <div className="mb-5 flex items-center justify-between">
-                        <h2 className="text-lg font-semibold text-foreground">Рекомендованные меры поддержки</h2>
+                        <h2 className="text-lg font-semibold text-foreground">{t('Рекомендованные меры поддержки')}</h2>
                         <Badge variant="secondary" className="gap-1">
                             {result.mode === 'ai' ? <Sparkles className="size-3" /> : null}
-                            {result.mode === 'ai' ? 'Подбор AI' : 'Подбор по совпадениям'}
+                            {result.mode === 'ai' ? t('Подбор AI') : t('Подбор по совпадениям')}
                         </Badge>
                     </div>
 

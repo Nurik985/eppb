@@ -2,6 +2,7 @@ import ServiceCard from '@/components/service-card';
 import { Button } from '@/components/ui/button';
 import PublicLayout from '@/layouts/public-layout';
 import { plural } from '@/lib/format';
+import { useT } from '@/lib/i18n';
 import type { Category, ServiceCard as ServiceCardType } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
@@ -18,6 +19,7 @@ type CatalogProps = {
 
 export default function Catalog({ services, categories, filters }: CatalogProps) {
     const [query, setQuery] = useState(filters.q ?? '');
+    const t = useT();
 
     const applyFilters = (next: { q?: string; category?: string | null }) => {
         const params: Record<string, string> = {};
@@ -37,20 +39,20 @@ export default function Catalog({ services, categories, filters }: CatalogProps)
 
     return (
         <PublicLayout>
-            <Head title="Каталог услуг" />
+            <Head title={t('Каталог услуг')} />
 
             <div className="border-b border-border/70 bg-muted/30">
                 <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Link href="/" className="hover:text-foreground">
-                            Главная
+                            {t('Главная')}
                         </Link>
                         <span>/</span>
-                        <span className="text-foreground">Каталог услуг</span>
+                        <span className="text-foreground">{t('Каталог услуг')}</span>
                     </div>
-                    <h1 className="mt-3 text-3xl font-bold tracking-tight text-foreground">Каталог мер поддержки</h1>
+                    <h1 className="mt-3 text-3xl font-bold tracking-tight text-foreground">{t('Каталог мер поддержки')}</h1>
                     <p className="mt-2 text-muted-foreground">
-                        {services.length} {plural(services.length, 'услуга', 'услуги', 'услуг')} от организаций группы «Байтерек».
+                        {services.length} {t(plural(services.length, 'услуга', 'услуги', 'услуг'))} · «Байтерек»
                     </p>
 
                     <form onSubmit={submitSearch} className="mt-6 flex max-w-2xl items-center gap-2">
@@ -59,12 +61,12 @@ export default function Catalog({ services, categories, filters }: CatalogProps)
                             <input
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
-                                placeholder="Поиск по услугам"
+                                placeholder={t('Поиск по услугам')}
                                 className="h-11 w-full rounded-xl border border-input bg-background pr-4 pl-11 text-sm shadow-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
                             />
                         </div>
                         <Button type="submit" className="h-11">
-                            Найти
+                            {t('Найти')}
                         </Button>
                     </form>
                 </div>
@@ -75,7 +77,7 @@ export default function Catalog({ services, categories, filters }: CatalogProps)
                 <div className="mb-8 flex flex-wrap items-center gap-2">
                     <span className="mr-1 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
                         <SlidersHorizontal className="size-4" />
-                        Направление:
+                        {t('Направление')}:
                     </span>
                     <button
                         onClick={() => applyFilters({ category: null })}
@@ -85,7 +87,7 @@ export default function Catalog({ services, categories, filters }: CatalogProps)
                                 : 'bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                         }`}
                     >
-                        Все
+                        {t('Все')}
                     </button>
                     {categories
                         .filter((c) => c.services_count > 0)
@@ -111,7 +113,7 @@ export default function Catalog({ services, categories, filters }: CatalogProps)
                             className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground"
                         >
                             <X className="size-3.5" />
-                            Сбросить
+                            {t('Сбросить')}
                         </button>
                     )}
                 </div>
@@ -124,7 +126,7 @@ export default function Catalog({ services, categories, filters }: CatalogProps)
                     </div>
                 ) : (
                     <div className="rounded-2xl border border-dashed border-border py-20 text-center">
-                        <p className="text-muted-foreground">По вашему запросу услуги не найдены.</p>
+                        <p className="text-muted-foreground">{t('По вашему запросу услуги не найдены.')}</p>
                         <Button
                             variant="outline"
                             className="mt-4"
@@ -133,7 +135,7 @@ export default function Catalog({ services, categories, filters }: CatalogProps)
                                 router.get('/catalog');
                             }}
                         >
-                            Сбросить фильтры
+                            {t('Сбросить фильтры')}
                         </Button>
                     </div>
                 )}

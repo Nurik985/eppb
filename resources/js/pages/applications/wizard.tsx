@@ -2,6 +2,7 @@ import PortalLogo from '@/components/portal-logo';
 import { Button } from '@/components/ui/button';
 import WizardField from '@/components/wizard/wizard-field';
 import { formatTenge } from '@/lib/format';
+import { LanguageSwitcher, useT } from '@/lib/i18n';
 import { computeValues, isFieldVisible } from '@/lib/schema-engine';
 import { cn } from '@/lib/utils';
 import type { ServiceFull } from '@/types';
@@ -63,6 +64,7 @@ export default function Wizard({ application, service, references }: WizardProps
     const [stepIndex, setStepIndex] = useState(Math.min(application.current_step, steps.length - 1));
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [saving, setSaving] = useState(false);
+    const t = useT();
     const [submitting, setSubmitting] = useState(false);
 
     const step = steps[stepIndex];
@@ -170,12 +172,15 @@ export default function Wizard({ application, service, references }: WizardProps
                         <PortalLogo subtitle={false} />
                     </Link>
                     <div className="hidden text-sm text-muted-foreground sm:block">
-                        Заявка №{application.number}
+                        {t('Заявка')} №{application.number}
                     </div>
-                    <Button variant="ghost" size="sm" onClick={() => persist(stepIndex)} disabled={saving}>
-                        {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
-                        Сохранить и выйти
-                    </Button>
+                    <div className="flex items-center gap-2">
+                        <LanguageSwitcher />
+                        <Button variant="ghost" size="sm" onClick={() => persist(stepIndex)} disabled={saving}>
+                            {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+                            {t('Сохранить и выйти')}
+                        </Button>
+                    </div>
                 </div>
             </header>
 
@@ -226,7 +231,7 @@ export default function Wizard({ application, service, references }: WizardProps
                     <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
                         <div className="mb-6">
                             <p className="text-sm font-medium text-primary">
-                                Шаг {stepIndex + 1} из {steps.length}
+                                {t('Шаг')} {stepIndex + 1} / {steps.length}
                             </p>
                             <h1 className="mt-1 text-2xl font-bold text-foreground">{step.title}</h1>
                             {step.description && <p className="mt-1.5 text-muted-foreground">{step.description}</p>}
@@ -258,16 +263,16 @@ export default function Wizard({ application, service, references }: WizardProps
                         <div className="mt-8 flex items-center justify-between gap-3 border-t border-border/70 pt-6">
                             <Button variant="outline" onClick={goPrev} disabled={stepIndex === 0}>
                                 <ArrowLeft className="size-4" />
-                                Назад
+                                {t('Назад')}
                             </Button>
                             {isLast ? (
                                 <Button onClick={submit} disabled={submitting} size="lg">
                                     {submitting ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
-                                    {schema.settings?.submitLabel ?? 'Отправить заявку'}
+                                    {schema.settings?.submitLabel ? t(schema.settings.submitLabel) : t('Отправить заявку')}
                                 </Button>
                             ) : (
                                 <Button onClick={goNext} size="lg">
-                                    Далее
+                                    {t('Далее')}
                                     <ArrowRight className="size-4" />
                                 </Button>
                             )}
@@ -278,7 +283,7 @@ export default function Wizard({ application, service, references }: WizardProps
                     <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
                         {liveComputed.length > 0 && (
                             <div className="rounded-2xl border border-border bg-card p-5">
-                                <h3 className="text-sm font-semibold text-foreground">Предварительный расчёт</h3>
+                                <h3 className="text-sm font-semibold text-foreground">{t('Предварительный расчёт')}</h3>
                                 <dl className="mt-3 space-y-2.5">
                                     {liveComputed.map((f) => (
                                         <div key={f.id} className="flex items-baseline justify-between gap-3">
@@ -290,14 +295,13 @@ export default function Wizard({ application, service, references }: WizardProps
                                     ))}
                                 </dl>
                                 <p className="mt-3 text-xs text-muted-foreground">
-                                    Значения рассчитываются автоматически по мере заполнения.
+                                    {t('Значения рассчитываются автоматически по мере заполнения.')}
                                 </p>
                             </div>
                         )}
 
                         <div className="rounded-2xl border border-dashed border-border p-5 text-sm text-muted-foreground">
-                            Черновик сохраняется автоматически при переходе между шагами. Вы можете вернуться к
-                            заполнению в любой момент.
+                            {t('Черновик сохраняется автоматически при переходе между шагами. Вы можете вернуться к заполнению в любой момент.')}
                         </div>
                     </aside>
                 </div>
